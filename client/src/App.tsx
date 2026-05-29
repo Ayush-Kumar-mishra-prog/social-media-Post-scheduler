@@ -1,6 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Layout from "./components/Layout";
+import Dashbord from "./pages/Dashbord";
+import Accounts from "./pages/Accounts";
+import Scheduler from "./pages/Scheduler";
+import AiComposer from "./pages/AiComposer";
+
 
 export default function App() {
     return (
@@ -8,6 +14,13 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashbord />} />
+                <Route path="/accounts" element={<Accounts />} />
+                <Route path="/schedule" element={<Scheduler />} />
+                <Route path="/ai-composer" element={<AiComposer />} />
+
+                </Route>
             </Routes>
         </>
     );
