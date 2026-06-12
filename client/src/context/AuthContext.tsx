@@ -1,0 +1,95 @@
+import { createContext, useContext, useEffect, useState } from "react";
+import api from "../api/axios";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  isLoading: boolean;
+  login: (userData: User, token: string) => void;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const isValidToken = (token: string | null) => {
+  return !!token && token !== "undefined" && token !== "null";
+};
+
+const clearAuthState = () => {
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  delete api.defaults.headers.common["Authorization"];
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUser && isValidToken(storedToken)) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setToken(storedToken);
+        api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+      } catch (error) {
+        clearAuthState();
+      }
+    } else {
+      clearAuthState();
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  const login = (userData: User, newToken: string) => {
+    if (!isValidToken(newToken)) return;
+    setUser(userData);
+    setToken(newToken);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", newToken);
+    api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+  };
+
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    clearAuthState();
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isLoading,
+        login,
+        logout,
+        isAuthenticated: Boolean(user && token),
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

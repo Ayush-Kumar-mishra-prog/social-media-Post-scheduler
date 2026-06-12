@@ -4,15 +4,10 @@ import {
   ClockIcon,
   SendIcon,
   Share2Icon,
-  TrendingUp,
   TrendingUpIcon,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import {
-  dummyAccountsData,
-  dummyActivityData,
-  dummyPostsData,
-} from "../assets/assets";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 
 const Dashbord = () => {
   const [stats, setStats] = useState({
@@ -45,11 +40,7 @@ const Dashbord = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [postRes, accountRes, activityRes] = [
-          { data: dummyPostsData },
-          { data: dummyAccountsData },
-          { data: dummyActivityData },
-        ];
+        const [postRes, accountRes, activityRes] = await Promise.all([api.get("/api/posts"),api.get("/api/accounts"),api.get("/api/activity")])
         const posts = postRes.data;
         setStats({
           scheduled: posts.filter((p: any) => p.status === "scheduled").length,
