@@ -36,12 +36,14 @@ const Accounts = () => {
   platform?: string | null,
   successMsg?: string,
 ) => {
+  // const toastId = toast.loading("Syncing account...");
   try {
       if(isSync){
         const label = platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : "Social Media";
         toast.info(`Syncing ${label} account...`);
         await api.get("/api/oauth/sync");
-        toast.success(successMsg || "Account synced!")
+        toast.success("Account synced")
+  
       }
 
       const {data} = await api.get("/api/accounts") 
