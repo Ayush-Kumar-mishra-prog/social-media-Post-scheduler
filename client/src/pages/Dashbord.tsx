@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import Loader from "../components/Loader";
 
 const Dashbord = () => {
   const [stats, setStats] = useState({
@@ -16,6 +17,7 @@ const Dashbord = () => {
     connectedAccounts: 0,
   });
   const [activity, setActivity] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const statCards = [
     {
       label: "Scheduled Post",
@@ -39,6 +41,7 @@ const Dashbord = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setIsLoading(true);
       try {
         const [postRes, accountRes, activityRes] = await Promise.all([api.get("/api/posts"),api.get("/api/accounts"),api.get("/api/activity")])
         const posts = postRes.data;
@@ -52,10 +55,18 @@ const Dashbord = () => {
         setActivity(activityRes.data);
       } catch (error: any) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchDashboardData();
   }, []);
+
+  if (isLoading) {
+    return (
+      <Loader label="Loading dashboard insights..." className="min-h-[55vh]" />
+    );
+  }
   return (
     <div className="space-y-8">
       <div className="">

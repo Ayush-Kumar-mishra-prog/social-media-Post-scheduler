@@ -75,13 +75,19 @@ import {
   UnplugIcon,
 } from "lucide-react";
 import { PLATFORMS } from "../../assets/assets";
+import Loader from "../Loader";
 
 interface AccountListProps {
   accounts: any[];
+  isLoading: boolean;
   onDisconnect: (accountId: string) => Promise<void>;
 }
 
-const AccountList = ({ accounts, onDisconnect }: AccountListProps) => {
+const AccountList = ({
+  accounts,
+  onDisconnect,
+  isLoading,
+}: AccountListProps) => {
   const handleDisconnectInternal = async (accountId: string) => {
     const confirm = window.confirm(
       "Are you sure you want to disconnect this account?",
@@ -90,6 +96,15 @@ const AccountList = ({ accounts, onDisconnect }: AccountListProps) => {
       await onDisconnect(accountId);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Loader
+        label="Loading connected accounts..."
+        className="min-h-[220px]"
+      />
+    );
+  }
 
   if (accounts.length === 0) {
     return (
