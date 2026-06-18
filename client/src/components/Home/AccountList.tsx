@@ -98,7 +98,12 @@ const AccountList = ({
   };
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <Loader
+        label="Loading connected accounts..."
+        className="min-h-[220px]"
+      />
+    );
   }
 
   if (accounts.length === 0) {

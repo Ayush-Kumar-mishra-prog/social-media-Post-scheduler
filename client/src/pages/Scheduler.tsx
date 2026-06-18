@@ -3,6 +3,7 @@ import { PLATFORMS } from '../assets/assets'
 import { ArrowRightIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, XIcon,SendIcon } from 'lucide-react'
 import api from '../api/axios'
 import { toast } from 'react-toastify'
+import Loader from '../components/Loader'
 
 const Scheduler = () => {
 
@@ -13,18 +14,26 @@ const Scheduler = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [mediaFile, setMediaFile] = useState<File | null>(null)
   const[loading,setLoading] = useState(false)
+  const [isPostsLoading, setIsPostsLoading] = useState(true)
 
-  const fetchPosts = async() => {
+  const fetchPosts = async(showLoader = false) => {
+    if(showLoader){
+      setIsPostsLoading(true)
+    }
     try {
       const {data} = await api.get("/api/posts")
       setPosts(data)
     } catch (error:any) {
        toast.error(error?.response?.data?.message || error?.message )
+    } finally{
+      if(showLoader){
+        setIsPostsLoading(false)
+      }
     }
   }
 
   useEffect(()=>{
-    (async ()=> await fetchPosts())();
+    (async ()=> await fetchPosts(true))();
     const interval = setInterval(async ()=> await fetchPosts(), 10000)
     return ()=> clearInterval(interval)
 
@@ -66,7 +75,7 @@ const Scheduler = () => {
     setScheduledTime("")
     setSelectedPlatforms([])
     setMediaFile(null)
-    fetchPosts()
+    await fetchPosts()
    } catch (error:any) {
       toast.error(error?.response?.data?.message || error.message)
    }
@@ -74,6 +83,10 @@ const Scheduler = () => {
     setLoading(false)
    }
    
+  }
+
+  if(isPostsLoading){
+    return <Loader label="Loading scheduler posts..." className="min-h-[55vh]" />
   }
   return (
     <div className='flex flex-col lg:flex-row gap-6 h-ful'>

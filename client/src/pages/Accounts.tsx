@@ -46,7 +46,7 @@ const Accounts = () => {
           : "Social Media";
         toast.info(`Syncing ${label} account...`);
         await api.get("/api/oauth/sync");
-        toast.success("Account synced");
+        toast.success(successMsg || "Account synced");
       }
 
       const { data } = await api.get("/api/accounts");
@@ -83,7 +83,6 @@ const Accounts = () => {
     } else {
       fetchAccounts();
     }
-    fetchAccounts();
   }, []);
 
   const handleDisconnect = async (accountId: string) => {

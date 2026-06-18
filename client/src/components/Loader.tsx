@@ -1,12 +1,23 @@
-import React from "react";
+type LoaderProps = {
+  label?: string;
+  className?: string;
+};
 
-const Loader = () => {
+const Loader = ({ label = "Loading...", className = "" }: LoaderProps) => {
   return (
-    <div className="flex items-center justify-center space-x-2 py-10 w-full">
-      <div className="w-3 h-3 bg-red-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div className="w-3 h-3 bg-red-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div className="w-3 h-3 bg-red-600 rounded-full animate-bounce"></div>
-      <span className="sr-only">Loading...</span>
+    <div
+      className={`flex flex-col items-center justify-center gap-3 w-full ${className}`}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="relative size-14">
+        <div className="absolute inset-0 rounded-full border-[3px] border-red-100" />
+        <div className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-red-500 border-r-red-400 animate-spin" />
+        <div className="absolute inset-3 rounded-full bg-gradient-to-br from-red-500/35 to-rose-400/15 animate-pulse" />
+      </div>
+      <span className="text-sm font-medium tracking-wide text-red-500">
+        {label}
+      </span>
     </div>
   );
 };
